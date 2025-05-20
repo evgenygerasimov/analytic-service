@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<h2>Orders over time</h2>
+<canvas id="ordersChart" width="800" height="400"></canvas>
+
+<script th:inline="javascript">
+    const labels = /*[[${labels}]]*/ [];
+    const ordersData = /*[[${ordersData}]]*/ [];
+    const itemsData = /*[[${itemsData}]]*/ [];
+    const amountsData = /*[[${amountsData}]]*/ [];
+
+    const config = {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Orders Count',
+                    data: ordersData,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Items Count',
+                    data: itemsData,
+                    borderColor: 'rgb(255, 99, 132)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Amount',
+                    data: amountsData,
+                    borderColor: 'rgb(54, 162, 235)',
+                    tension: 0.1
+                }
+            ]
+        }
+    };
+
+    new Chart(document.getElementById('ordersChart'), config);
+</script>
+</body>
+</html>
