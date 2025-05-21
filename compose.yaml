@@ -1,8 +1,30 @@
 services:
   cassandra:
-    image: 'cassandra:latest'
+    container_name: cassandra
+    image: cassandra:latest
     environment:
-      - 'CASSANDRA_DC=dc1'
-      - 'CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch'
+      - CASSANDRA_DC=dc1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
     ports:
-      - '9042'
+      - "9042:9042"
+    networks:
+      - honey_net
+
+  analytic-service:
+    build: .
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_CASSANDRA_CONTACT_POINTS=cassandra
+      - SPRING_CASSANDRA_KEYSPACE_NAME=honey_keyspace
+      - SPRING_CASSANDRA_USERNAME=${CASSANDRA_USERNAME}
+      - SPRING_CASSANDRA_PASSWORD=${CASSANDRA_PASSWORD}
+      - SPRING_CASSANDRA_LOCAL_DATACENTER=dc1
+    depends_on:
+      - cassandra
+    networks:
+      - honey_net
+
+networks:
+  honey_net:
+    external: true
