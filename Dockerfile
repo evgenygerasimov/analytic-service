@@ -8,4 +8,4 @@ COPY target/analytic-service-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["./wait-for-it.sh", "cassandra:9042", "--", "java", "-jar", "app.jar"]
+ENTRYPOINT ["./wait-for-it.sh", "postgres_analytics_db:5433", "--", "java", "-jar", "app.jar"]

@@ -10,6 +10,7 @@ import org.site.analyticservice.mapper.LocalDateTimeArrayDeserializer;
 import org.site.analyticservice.repositiry.OrderInfoRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -36,10 +37,14 @@ public class OrderInfoService {
         return orderInfoRepository.save(orderInfo);
     }
 
-    public List<OrderStat> getOrderStats() {
+    public List<OrderStat> getOrderStats(LocalDate from, LocalDate to) {
         List<OrderInfo> allOrders = orderInfoRepository.findAll();
 
         return allOrders.stream()
+                .filter(order -> {
+                    LocalDate date = order.getBucketTime().toLocalDate();
+                    return (date.compareTo(from) >= 0 && date.compareTo(to) <= 0);
+                })
                 .collect(Collectors.groupingBy(
                         order -> order.getBucketTime().toLocalDate().toString()
                 ))
@@ -52,7 +57,8 @@ public class OrderInfoService {
                             .mapToInt(OrderInfo::getTotalItemsCount)
                             .sum();
                     double totalAmount = orders.stream()
-                            .mapToDouble(OrderInfo::getTotalItemsAmount).sum();
+                            .mapToDouble(OrderInfo::getTotalItemsAmount)
+                            .sum();
                     return new OrderStat(date, ordersCount, totalItems, totalAmount);
                 })
                 .sorted(Comparator.comparing(OrderStat::bucketTime))
