@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Аналитика</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 240px;
+            background-color: #f8f9fa;
+            padding: 20px 0;
+            border-right: 1px solid #dee2e6;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Кнопки меню */
+        .sidebar form {
+            margin: 0;
+            width: 100%;
+        }
+        .sidebar button.btn-light {
+            width: 100%;
+            border-radius: 0;
+            border: none;
+            border-bottom: 1px solid #dee2e6;
+            text-align: left;
+            padding-left: 20px;
+            font-weight: 500;
+            color: #212529;
+            background-color: transparent;
+            transition: background-color 0.2s ease;
+        }
+        .sidebar button.btn-light:last-child {
+            border-bottom: none;
+        }
+        .sidebar button.btn-light:hover,
+        .sidebar button.btn-light:focus {
+            background-color: #e9ecef;
+            color: #000;
+            outline: none;
+            box-shadow: none;
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .nav-link.active {
+            font-weight: bold;
+        }
+        .sidebar h5 {
+            padding-left: 20px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #212529;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Аналитика</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" th:href="@{/}">Главная</a></li>
+            </ul>
+            <form class="d-flex" th:action="@{/auth/logout}" method="post">
+                <button class="btn btn-outline-light" type="submit">Выход</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="main-container">
+    <div class="sidebar">
+        <h5>Графики</h5>
+        <form th:action="@{/analytics/order-info-dashboard}" method="get">
+            <button type="submit" class="btn btn-light">Заказы</button>
+        </form>
+        <form th:action="@{/analytics/page-view-dashboard}" method="get">
+            <button type="submit" class="btn btn-light">Просмотры страниц</button>
+        </form>
+    </div>
+
+    <div class="content">
+        <h3>Добро пожаловать в систему аналитики</h3>
+        <p>Выберите нужный график в левом меню.</p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

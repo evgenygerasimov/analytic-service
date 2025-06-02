@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import org.site.analyticservice.entity.PageViewEvent;
 import org.site.analyticservice.entity.PageViewStat;
 import org.site.analyticservice.mapper.LocalDateTimeArrayDeserializer;
-import org.site.analyticservice.repositiry.PageViewEventRepository;
+import org.site.analyticservice.repositiry.PageViewInfoRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,9 +19,9 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class PageViewEventService {
+public class PageViewInfoService {
 
-    private final PageViewEventRepository pageViewEventRepository;
+    private final PageViewInfoRepository pageViewInfoRepository;
 
     public PageViewEvent save(String pageViewEventJson) {
         PageViewEvent pageViewEvent;
@@ -36,11 +36,11 @@ public class PageViewEventService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        return pageViewEventRepository.save(pageViewEvent);
+        return pageViewInfoRepository.save(pageViewEvent);
     }
 
     public List<PageViewStat> getPageViewStats(LocalDate from, LocalDate to) {
-        List<PageViewEvent> allEvents = pageViewEventRepository.findAll();
+        List<PageViewEvent> allEvents = pageViewInfoRepository.findAll();
 
         return allEvents.stream()
                 .filter(event -> {

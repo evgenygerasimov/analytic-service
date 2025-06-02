@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface PageViewEventRepository extends JpaRepository<PageViewEvent, UUID> {
+public interface PageViewInfoRepository extends JpaRepository<PageViewEvent, UUID> {
 }

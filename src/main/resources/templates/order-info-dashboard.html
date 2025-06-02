@@ -1,46 +1,186 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Аналитика заказов</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* === Общие стили страницы === */
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            background-color: #f8f9fa;
+        }
+        body {
+            min-height: 100vh;
+        }
+
+        /* Верхний navbar */
+        nav.navbar {
+            flex-shrink: 0;
+        }
+
+        /* Контейнер с боковым меню и контентом */
+        .main-container {
+            flex: 1 1 auto;
+            display: flex;
+            min-height: 0; /* важно для правильного скролла */
+            overflow: hidden;
+        }
+
+        /* Левое меню */
+        .sidebar {
+            width: 240px;
+            background-color: #f8f9fa;
+            padding-top: 20px;
+            border-right: 1px solid #dee2e6;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+        .sidebar h5 {
+            padding-left: 20px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #212529;
+        }
+        .sidebar form {
+            margin: 0;
+            width: 100%;
+        }
+        .sidebar button.btn-light {
+            width: 100%;
+            border-radius: 0;
+            border: none;
+            border-bottom: 1px solid #dee2e6;
+            text-align: left;
+            padding-left: 20px;
+            font-weight: 500;
+            color: #212529;
+            background-color: transparent;
+            transition: background-color 0.2s ease;
+        }
+        .sidebar button.btn-light:last-child {
+            border-bottom: none;
+        }
+        .sidebar button.btn-light:hover,
+        .sidebar button.btn-light:focus {
+            background-color: #e9ecef;
+            color: #000;
+            outline: none;
+            box-shadow: none;
+        }
+
+        /* Основной контент справа */
+        .content {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        /* Заголовок и кнопка сверху */
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+        .content-header h1 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        /* Форма фильтрации */
+        form.filter-form .form-label {
+            font-weight: 500;
+        }
+
+        /* Карточка с графиком */
+        .card-header {
+            background-color: #343a40;
+            color: white;
+        }
+        .card-body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            flex-grow: 1;
+        }
+    </style>
 </head>
-<body class="bg-light">
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Аналитика</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" th:href="@{/}">Главная</a></li>
+            </ul>
+            <form class="d-flex" th:action="@{/auth/logout}" method="post">
+                <button class="btn btn-outline-light" type="submit">Выход</button>
+            </form>
+        </div>
+    </div>
+</nav>
 
-<div class="container py-5">
-    <h1 class="mb-4 text-center">Аналитика заказов</h1>
+<div class="main-container">
+    <div class="sidebar">
+        <h5>Графики</h5>
+        <form th:action="@{/analytics/order-info-dashboard}" method="get">
+            <button type="submit" class="btn btn-light">Заказы</button>
+        </form>
+        <form th:action="@{/analytics/page-view-dashboard}" method="get">
+            <button type="submit" class="btn btn-light">Просмотры страниц</button>
+        </form>
+    </div>
 
-    <!-- Форма фильтрации -->
-    <form class="row g-3 mb-4" method="get" action="#">
-        <div class="col-md-4">
-            <label for="fromDate" class="form-label">С даты</label>
-            <input type="date" class="form-control" id="fromDate" name="from" th:value="${from}">
+    <div class="content">
+        <div class="content-header">
+            <h1>Аналитика заказов</h1>
+            <form th:action="@{/analytics/}" method="get">
+                <button type="submit" class="btn btn-light">На главную</button>
+            </form>
         </div>
-        <div class="col-md-4">
-            <label for="toDate" class="form-label">По дату</label>
-            <input type="date" class="form-control" id="toDate" name="to" th:value="${to}">
-        </div>
-        <div class="col-md-4 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary w-100">Показать</button>
-        </div>
-    </form>
 
-    <!-- Карточка с графиком -->
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Динамика заказов, товаров и выручки</h5>
-        </div>
-        <div class="card-body">
-            <div class="chart-container" style="position: relative; height:400px; width:100%">
-                <canvas id="ordersChart"></canvas>
+        <form class="row g-3 mb-4 filter-form" method="get" action="#">
+            <div class="col-md-4">
+                <label for="fromDate" class="form-label">С даты</label>
+                <input type="date" class="form-control" id="fromDate" name="from" th:value="${from}">
             </div>
-            <p class="text-muted mt-3">
-                График показывает количество заказов, товаров и сумму выручки по выбранному диапазону дат.
-            </p>
+            <div class="col-md-4">
+                <label for="toDate" class="form-label">По дату</label>
+                <input type="date" class="form-control" id="toDate" name="to" th:value="${to}">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-sm btn-outline-secondary w-100">Показать</button>
+            </div>
+        </form>
+
+        <div class="card shadow-sm d-flex flex-column" style="flex-grow: 1; min-height: 0;">
+            <div class="card-header">
+                <h5 class="mb-0">Динамика заказов, товаров и выручки</h5>
+            </div>
+            <div class="card-body d-flex flex-column" style="min-height: 0;">
+                <div class="chart-container">
+                    <canvas id="ordersChart"></canvas>
+                </div>
+                <p class="text-muted mt-3 mb-0">
+                    График показывает количество заказов, товаров и сумму выручки по выбранному диапазону дат.
+                </p>
+            </div>
         </div>
     </div>
 </div>
@@ -84,33 +224,20 @@
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
-                legend: {
-                    position: 'top'
-                },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false
-                },
-                title: {
-                    display: false
-                }
+                legend: { position: 'top' },
+                tooltip: { mode: 'index', intersect: false },
+                title: { display: false }
             },
-            interaction: {
-                mode: 'nearest',
-                axis: 'x',
-                intersect: false
-            },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
+            interaction: { mode: 'nearest', axis: 'x', intersect: false },
+            scales: { y: { beginAtZero: true } }
         }
     };
 
     new Chart(document.getElementById('ordersChart'), config);
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
