@@ -5,126 +5,16 @@
     <title>Аналитика посещений</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        /* === Общие стили страницы === */
-        html, body {
-            height: 100%;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            background-color: #f8f9fa;
-        }
-        body {
-            min-height: 100vh;
-        }
-
-        /* Верхний navbar */
-        nav.navbar {
-            flex-shrink: 0;
-        }
-
-        /* Контейнер с боковым меню и контентом */
-        .main-container {
-            flex: 1 1 auto;
-            display: flex;
-            min-height: 0; /* важно для правильного скролла */
-            overflow: hidden;
-        }
-
-        /* Левое меню */
-        .sidebar {
-            width: 240px;
-            background-color: #f8f9fa;
-            padding-top: 20px;
-            border-right: 1px solid #dee2e6;
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-        }
-        .sidebar h5 {
-            padding-left: 20px;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #212529;
-        }
-        .sidebar form {
-            margin: 0;
-            width: 100%;
-        }
-        .sidebar button.btn-light {
-            width: 100%;
-            border-radius: 0;
-            border: none;
-            border-bottom: 1px solid #dee2e6;
-            text-align: left;
-            padding-left: 20px;
-            font-weight: 500;
-            color: #212529;
-            background-color: transparent;
-            transition: background-color 0.2s ease;
-        }
-        .sidebar button.btn-light:last-child {
-            border-bottom: none;
-        }
-        .sidebar button.btn-light:hover,
-        .sidebar button.btn-light:focus {
-            background-color: #e9ecef;
-            color: #000;
-            outline: none;
-            box-shadow: none;
-        }
-
-        /* Основной контент справа */
-        .content {
-            flex: 1 1 auto;
-            overflow-y: auto;
-            padding: 20px;
-            background-color: #fff;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-        }
-
-        /* Заголовок и кнопка сверху */
-        .content-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            flex-shrink: 0;
-        }
-        .content-header h1 {
-            margin: 0;
-            font-weight: 600;
-        }
-
-        /* Форма фильтрации */
-        form.filter-form .form-label {
-            font-weight: 500;
-        }
-
-        /* Карточка с графиком */
-        .card-header {
-            background-color: #343a40;
-            color: white;
-        }
-        .card-body {
-            padding: 1rem;
-        }
-        .chart-container {
-            position: relative;
-            height: 400px;
-            width: 100%;
-        }
-    </style>
+    <link rel="stylesheet" href="/assets/css/styles.min.css">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Аналитика</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" th:href="@{/}">Главная</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/cart}">Корзина</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/checkout}">Оформление заказа</a></li>
             </ul>
             <form class="d-flex" th:action="@{/auth/logout}" method="post">
                 <button class="btn btn-outline-light" type="submit">Выход</button>
@@ -135,12 +25,47 @@
 
 <div class="main-container">
     <div class="sidebar">
-        <h5>Графики</h5>
-        <form th:action="@{/analytics/order-info-dashboard}" method="get">
+        <form th:action="@{/users/{userId}(userId=${authUserId})}" method="get">
+            <button type="submit" class="btn btn-light">Моя страница</button>
+        </form>
+        <form th:action="@{/products}" method="get">
+            <button type="submit" class="btn btn-light">Товары</button>
+        </form>
+        <form th:action="@{/categories}" method="get">
+            <button type="submit" class="btn btn-light">Категории</button>
+        </form>
+        <form th:action="@{/showcase}" method="get">
+            <button type="submit" class="btn btn-light">Управление витриной</button>
+        </form>
+        <form th:action="@{/orders}" method="get">
             <button type="submit" class="btn btn-light">Заказы</button>
         </form>
-        <form th:action="@{/analytics/page-view-dashboard}" method="get">
-            <button type="submit" class="btn btn-light">Просмотры страниц</button>
+        <form th:action="@{/users/list}" method="get"
+              th:if="${#authorization.expression('hasRole(''ROLE_SUPER_ADMIN'')')}">
+            <button type="submit" class="btn btn-light">Пользователи</button>
+        </form>
+        <form th:action="@{/users}" method="get"
+              th:if="${#authorization.expression('hasRole(''ROLE_SUPER_ADMIN'')')}">
+            <button type="submit" class="btn btn-light">Добавить пользователя</button>
+        </form>
+        <form th:action="@{/users/edit_form/{userId}(userId=${authUserId})}">
+            <button type="submit" class="btn btn-light">Редактировать профиль</button>
+        </form>
+        <button class="btn btn-light no-border" type="button"
+                data-bs-toggle="collapse" data-bs-target="#analyticsSubmenu"
+                aria-expanded="false" aria-controls="analyticsSubmenu">
+            Аналитика
+        </button>
+        <div class="collapse" id="analyticsSubmenu">
+            <form th:action="@{/analytics/order-info-dashboard}" method="get">
+                <button type="submit" class="btn btn-light ps-5">Заказы</button>
+            </form>
+            <form th:action="@{/analytics/page-view-dashboard}" method="get">
+                <button type="submit" class="btn btn-light ps-5">Просмотры страниц</button>
+            </form>
+        </div>
+        <form th:action="@{/auth/logout}" method="post">
+            <button type="submit" class="btn btn-light">Выйти</button>
         </form>
     </div>
 
