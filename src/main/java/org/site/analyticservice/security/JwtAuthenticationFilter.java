@@ -1,4 +1,4 @@
-package org.site.analyticservice.security;
+package org.site.analyticservice.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
