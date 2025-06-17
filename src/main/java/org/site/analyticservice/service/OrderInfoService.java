@@ -64,5 +64,4 @@ public class OrderInfoService {
                 .sorted(Comparator.comparing(OrderStat::bucketTime))
                 .toList();
     }
-
 }
