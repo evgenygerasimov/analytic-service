@@ -1,6 +1,5 @@
 package org.site.analyticservice;
 
-
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -21,7 +20,6 @@ public class TestContainerConfig {
             .withUsername("test")
             .withPassword("test");
 
-
     @DynamicPropertySource
     static void overrideProps(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
@@ -30,6 +28,5 @@ public class TestContainerConfig {
         registry.add("spring.datasource.driver-class-name", postgres::getDriverClassName);
 
         registry.add("spring.liquibase.change-log", () -> "classpath:/db/changelog/db.changelog-master-test.xml");
-
     }
 }
