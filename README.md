@@ -68,8 +68,6 @@ order-events
 
 page-view-events
 
-session-events
-
 Each event is parsed, validated, and stored in the appropriate repository for further analysis and visualization.
 
 🔐 Security Recap
